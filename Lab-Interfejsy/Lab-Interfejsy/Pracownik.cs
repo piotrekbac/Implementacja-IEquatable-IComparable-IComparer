@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Lab_interfejssy
 {
-    public class Pracownik : IEnumerable<Pracownik>
+    public class Pracownik : IEquatable<Pracownik>, IComparable<Pracownik>
     {
         private string nazwisko;
         public string Nazwisko
@@ -38,7 +38,7 @@ namespace Lab_interfejssy
 
         }
 
-        public override string ToString() => $"({Nazwisko}, {DataZatrudnienia} ({CzasZatrudnienia}), {Wynagrodzenie})";
+        public override string ToString() => $"({Nazwisko}, {DataZatrudnienia} ({CzasZatrudnienia()}), {Wynagrodzenie} PLN)";
 
         public bool Equals(Pracownik? other)
         {
@@ -92,6 +92,22 @@ namespace Lab_interfejssy
 
         public int CzasZatrudnienia() => (DateTime.Now - DataZatrudnienia).Days / 30; //metoda zwracająca ilość dni od zatrudnienia
 
+
+        public int CompareTo(Pracownik other)
+        {
+            if (other is null) return 1; // w C#: null jest najmniejszą wartością (`this > null`)
+            if (this.Equals(other)) return 0; //zgodność z Equals (`this == other`)
+
+            if (this.Nazwisko != other.Nazwisko)
+                return this.Nazwisko.CompareTo(other.Nazwisko);
+
+            // ponieważ nazwiska równe, porządkujemy wg daty
+            if (!this.DataZatrudnienia.Equals(other.DataZatrudnienia)) // != zamiast !Equals
+                return this.DataZatrudnienia.CompareTo(other.DataZatrudnienia);
+
+            // ponieważ nazwiska równe i daty równe, porządkujemy wg wynagrodzenia
+            return this.Wynagrodzenie.CompareTo(other.Wynagrodzenie);
+        }
 
 
     }
